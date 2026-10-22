@@ -1,0 +1,8 @@
+{
+  "name": "ciphra-contracts",
+  "private": true,
+  "description": "CIPHRA ($CPH): Cipher Vault, Cipher Stake and Blind Ballot, launched on Programmable launch protection v1.",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": { "solc": "0.8.26" }
+}
