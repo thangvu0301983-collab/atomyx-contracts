@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "atomyx.forge-test-evidence.v1",
+  "status": "passed",
+  "forkTestsIncluded": true,
+  "passed": 35,
+  "results": [
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_00_initialBuyBoundCall()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_A01_customAccountingSolvencyRefundWithdrawal()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_C01_callbackAuthentication()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_F01_platformFeeExactNoBypassNoOvercharge()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_L01_liquidityCustodyAndWithdrawal()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P01_openingFdvFloor()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P02_staleOracleRejected()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P03_initialBuyAboveTwoPercentReverts()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P04_initialBuyMinimumOutputEnforced()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P05_singleAtomicInitialization()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P06_openingTaxAtLaunchSecond()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P07_openingTaxDecaysToNormal()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P08_developerTaxExemptButCapped()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P09_buyerCapIsCumulativeAndSellsDoNotRestore()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P10_recipientCapOnTransfers()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P11_canonicalRouterOnlyBuysSellsAnyRoute()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_P12_protectionExpiresAt300s()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_S01_fourQuadrantsMultiSize()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_S02_secondUserAndTime()",
+      "status": "Success"
+    },
+    {
+      "suite": "AtomyxExactVersionForkTest",
+      "test": "test_exact_V01_reclaimVaultLedger()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_anyoneCanDistribute_repeatedSafely()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_attesterAndGuardianTimelocked()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_cannotVoidAfterPayment()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_onlyGuardianPays_unknownAndVoidedBatchesRejected()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_rateCapTimelockAndHardMax()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_recipientsTimelock_oldFeesToOldRecipients()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_recordBatchRules()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_reentrantRecipientCannotDoubleDistribute()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_rewardNeverExceedsPool()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_rewardOnlyAfterReviewWithinWeightCap()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_rewardsPoolCannotLeaveAnyOtherWay()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_split50_30_20()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_zeroAddressesRejected()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "testFuzz_batchPaymentsNeverExceedCap(uint128,uint96,uint96)",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "testFuzz_splitAlwaysAddsUp(uint96)",
+      "status": "Success"
+    }
+  ]
+}
