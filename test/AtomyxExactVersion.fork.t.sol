@@ -951,10 +951,10 @@ contract AtomyxExactVersionForkTest is Test {
         vm.expectRevert(bytes4(keccak256("NothingToClaim()")));
         taxVault.claimCreator();
         // ReclaimVault: 80% project treasury, 20% Recycling Rewards pool kept in the vault.
-        address treasury = IReclaimVault(vault).treasury();
-        uint256 t0 = treasury.balance;
+        address projectTreasury = IReclaimVault(vault).treasury();
+        uint256 pt0 = projectTreasury.balance;
         IReclaimVault(vault).distribute();
-        uint256 paid = treasury.balance - t0;
+        uint256 paid = projectTreasury.balance - pt0;
         assertEq(paid, c * 8000 / 10_000, "treasury share");
         assertEq(vault.balance, c - paid, "the rewards share stays in the vault");
         assertEq(IReclaimVault(vault).rewardsPool(), vault.balance, "booked as the Recycling Rewards pool");
