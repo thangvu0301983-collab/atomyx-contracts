@@ -131,11 +131,6 @@
     },
     {
       "suite": "ReclaimVaultTest",
-      "test": "test_recipientsTimelock_oldFeesToOldRecipients()",
-      "status": "Success"
-    },
-    {
-      "suite": "ReclaimVaultTest",
       "test": "test_recordBatchRules()",
       "status": "Success"
     },
@@ -161,7 +156,12 @@
     },
     {
       "suite": "ReclaimVaultTest",
-      "test": "test_split50_30_20()",
+      "test": "test_split80_20()",
+      "status": "Success"
+    },
+    {
+      "suite": "ReclaimVaultTest",
+      "test": "test_treasuryTimelock_oldFeesToOldTreasury()",
       "status": "Success"
     },
     {

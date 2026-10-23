@@ -17,7 +17,7 @@ applicant cannot add runtime evidence to the admission record. It is provided he
 
 1. `export-exact-fixture.mjs` reads the packed `launch.json` and produces the Router's graph targets with resolved
    init code and initializer calldata, in deployment order, plus the route namespace and nonce.
-2. On an Ethereum mainnet fork (block 26252107), the test sends those exact targets to Programmable's
+2. On an Ethereum mainnet fork (block 26252311), the test sends those exact targets to Programmable's
    GraphFactory (`0xB012e4A8F2c5FC4E8E4faCA9D5Ad6FfF13FBA887`), called as the 24h Router (`0xBE4bF6Ac8c6F012E1C8f25747A9fBccB2FDAC4C3`) with the launch
    wallet as `tx.origin`.
 3. Every target is asserted at its predicted CREATE2 address with the packed runtime code hash.
@@ -29,7 +29,7 @@ request is rebuilt and re-tested until the regenerated evidence is byte-identica
 
 ## 1. Permit window
 
-The permit is valid from `validAfter` = 2026-10-24 02:26:56 UTC to `deadline` = 2026-10-25 02:26:56 UTC: 86,400 s, the 24h Router's
+The permit is valid from `validAfter` = 2026-10-24 03:07:55 UTC to `deadline` = 2026-10-25 03:07:55 UTC: 86,400 s, the 24h Router's
 `MAX_PERMIT_LIFETIME`. The window opens about 24 hours after packing, so it covers the 24-hour review and then the
 24-hour launch window.
 
@@ -37,13 +37,13 @@ The permit is valid from `validAfter` = 2026-10-24 02:26:56 UTC to `deadline` = 
 
 | Item | Value |
 |---|---|
-| Bound call | `initialize(hook, token, 187560, developer, 6710670923927445743591303)`, value 0.05 ETH, executed by the GraphFactory in the launch transaction |
+| Bound call | `initialize(hook, token, 187620, developer, 6716464466753637578139015)`, value 0.05 ETH, executed by the GraphFactory in the launch transaction |
 | Observed input | 50,000,000,000,000,000 wei |
-| Observed output | 6,778,455,478,714,591,660,193,236 ATMX units (6,778,455.47 ATMX) to the developer, at or above the minimum and below the 2% cap (20,000,000 ATMX) |
-| Fees | platform 150,000,000,000,000 wei; creator 1,000,000,000,000,000 wei; opening tax 0 (developer exempt) |
-| Opening price | FDV USD 17,045 at tick 187560 |
-| Feed | Chainlink ETH/USD answer 238135131229, 1,440 s old (limit 3,600 s) |
-| Floor | Launch passes while the answer is at least 209561407854 (11.99% below); one unit lower reverts with `OpeningValuationTooLow` |
+| Observed output | 6,784,307,542,175,391,493,069,713 ATMX units (6,784,307.54 ATMX) to the developer, at or above the minimum and below the 2% cap (20,000,000 ATMX) |
+| Fees | platform 150,000,000,000,000 wei; creator 1,250,000,000,000,000 wei; opening tax 0 (developer exempt) |
+| Opening price | FDV USD 17,045 at tick 187620 |
+| Feed | Chainlink ETH/USD answer 239569000000, 2,244 s old (limit 3,600 s) |
+| Floor | Launch passes while the answer is at least 210822492720 (11.99% below); one unit lower reverts with `OpeningValuationTooLow` |
 | Oversized buy | A 0.5 ETH opening buy reverts the whole graph (`BuyerLimitExceeded`) |
 | Short buy | A 0.045 ETH buy misses the bound minimum and reverts (`InvalidInitialBuy`) |
 
@@ -56,7 +56,7 @@ The permit is valid from `validAfter` = 2026-10-24 02:26:56 UTC to `deadline` = 
 | P03 | 2% opening-buy cap | Oversized opening buy reverts atomically; nothing is deployed |
 | P04 | Minimum output | Underfunded buy reverts |
 | P05 | Single atomic initialization | Initializer callable only by the GraphFactory, once; the pool cannot be re-initialized or cloned; the graph authorization cannot be replayed |
-| P06 | 99% opening fee | 0.01 ETH buy at second 0: opening tax 0.00967 ETH, platform 0.00003 ETH, creator 0.0002 ETH (990,000 ppm) |
+| P06 | 99% opening fee | 0.01 ETH buy at second 0: opening tax 0.00962 ETH, platform 0.00003 ETH, creator 0.00025 ETH (990,000 ppm) |
 | P07 | Linear decay | Exact surcharge at seconds 1, 10, 20 and 29; zero from second 30 |
 | P08 | Developer | Exempt from the surcharge but still capped: an over-cap buy reverts (`BuyerLimitExceeded`) |
 | P09 | Cumulative buyer cap | Second buy over 2% reverts; selling does not refill the budget |
@@ -69,31 +69,31 @@ The permit is valid from `validAfter` = 2026-10-24 02:26:56 UTC to `deadline` = 
 - **Four swap quadrants** (S01) and **a second user over time** (S02): exact-in and exact-out buys and sells at three
   sizes, interleaved users across 30 days and a year; every fee matches an independent reimplementation of the fee
   formula (gross native ETH, ceil per trade).
-- **Liquidity custody and withdrawal** (L01): the seed position (liquidity 84,603,820,630,259,055,837,607) belongs to
+- **Liquidity custody and withdrawal** (L01): the seed position (liquidity 84,350,402,156,845,222,604,686) belongs to
   the initializer, which has no withdrawal entry point. A third-party LP adds and fully withdraws, losing at most
   1 wei of rounding on each side.
 - **Callback authentication** (C01): hook callbacks revert unless called by the PoolManager; `afterSwap` is bound to
   the active swap; the module is kernel-only; fee vaults reject non-kernel records and unbound callbacks.
 - **Custom accounting** (A01): recorded fees are backed one-to-one by PoolManager ERC-6909 claims; supply is conserved;
-  an exact-output buy sent with 10 ETH pays exactly its gross (0.036165606026814416 ETH)
+  an exact-output buy sent with 10 ETH pays exactly its gross (0.036147984350092878 ETH)
   and gets the rest refunded. Claims are caller-independent and reach only the fixed recipients: creator fees go to the
   Reclaim Vault, platform fees and the opening tax to the treasury.
 - **Exact 0.3% platform fee** (F01): the same trades through the Universal Router, a v4 test router and a raw
   PoolManager integration each pay exactly `ceil(gross × 30 / 10000)`: 3,000 ppm of
-  21.81 ETH gross, no bypass and no overcharge.
+  21.78 ETH gross, no bypass and no overcharge.
 
 ## 5. Reclaim Vault and Recycling Ledger (V01, A01)
 
 The Reclaim Vault is the fourth graph target and the hook's immutable creator-fee recipient. On the exact deployed
 vault:
 
-- `distribute()` (anyone) pays 30% to the environment wallet and 20% to the buyback wallet, and keeps 50% as the
-  Recycling Rewards pool (A01: 0.028812 ETH paid out, 0.028812 ETH kept).
+- `distribute()` (anyone) pays 80% to the project treasury wallet and keeps 20% as the Recycling Rewards pool
+  (A01: 0.057548 ETH paid out, 0.014387 ETH kept).
 - Only the attester can record a batch (material, weight in grams, evidence hash).
 - A batch can be paid only by the guardian, only after the 24-hour review period, never after it was voided, and in
   total at most its weight times the cap: 0.0002 ETH per kg at launch (a 500 kg batch is capped at
   0.1 ETH), with a hard maximum of 0.001 ETH per kg in the contract.
-- Changing the recipients, the attester, the cap or the guardian takes a 48-hour public timelock, with no immediate
+- Changing the treasury wallet, the attester, the cap or the guardian takes a 48-hour public timelock, with no immediate
   exception. There is no other way to move ETH out of the vault.
 
 The ledger records the attester's claims; it does not by itself prove physical recycling. The project description in
@@ -106,8 +106,8 @@ Place the submitted bytes at `protected/launch.json` with its config, then run:
 ```bash
 PL_DIR=<@programmable/launch 4.1.7> node programmable/export-exact-fixture.mjs
 mkdir -p evidence/exact
-ETH_RPC_URL=<archive RPC> FORK_BLOCK=26252107 forge test --json > forge.json
-FORK_BLOCK=26252107 node programmable/collect-exact-evidence.mjs forge.json
+ETH_RPC_URL=<archive RPC> FORK_BLOCK=26252311 forge test --json > forge.json
+FORK_BLOCK=26252311 node programmable/collect-exact-evidence.mjs forge.json
 ```
 
 `evidence/exact-version.json` then matches the packed `atomyx/evidence/exact-version.json` byte for byte.

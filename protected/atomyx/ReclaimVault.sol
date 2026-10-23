@@ -7,9 +7,8 @@ pragma solidity 0.8.26;
 ///         fees (ETH) here, and anyone may call distribute().
 ///
 ///         Every distribution splits the ETH waiting here in fixed shares:
-///           50% Recycling Rewards pool, kept here; it can only leave as payReward() against a ledger batch
-///           30% Environment fund wallet
-///           20% Buyback wallet ($ATMX is bought back on the pool and burned, by hand, and announced)
+///           80% Project treasury wallet (team and operations; free to use)
+///           20% Recycling Rewards pool, kept here; it can only leave as payReward() against a ledger batch
 ///
 ///         The Recycling Ledger: the attester records each verified batch of waste (batch id, material, grams,
 ///         hash of the three-checkpoint weighing evidence). A batch can be rewarded only after a 24-hour public
@@ -17,13 +16,12 @@ pragma solidity 0.8.26;
 ///         total. maxWeiPerKg can never exceed HARD_MAX_WEI_PER_KG. The ledger records the attester's claims; it
 ///         does not prove physical recycling.
 ///
-///         The guardian can change the recipients, the attester, the reward cap or itself only through a
+///         The guardian can change the treasury wallet, the attester, the reward cap or itself only through a
 ///         48-hour public timelock. There is no other way to move ETH out of this contract.
 contract ReclaimVault {
     uint16 public constant BPS = 10_000;
-    uint16 public constant SHARE_REWARDS_BPS = 5_000;
-    uint16 public constant SHARE_ENVIRONMENT_BPS = 3_000;
-    uint16 public constant SHARE_BUYBACK_BPS = 2_000;
+    uint16 public constant SHARE_TREASURY_BPS = 8_000;
+    uint16 public constant SHARE_REWARDS_BPS = 2_000;
 
     uint32 public constant TIMELOCK = 48 hours;
     uint32 public constant REVIEW_PERIOD = 24 hours;
@@ -31,11 +29,6 @@ contract ReclaimVault {
     uint256 public constant HARD_MAX_WEI_PER_KG = 0.001 ether;
     /// @notice Materials: 0 PET, 1 HDPE, 2 PP, 3 other plastic, 4 metal, 5 paper, 6 glass, 7 e-waste.
     uint8 public constant MAX_MATERIAL = 7;
-
-    struct Recipients {
-        address environment;
-        address buyback;
-    }
 
     struct Batch {
         uint128 grams;
@@ -48,7 +41,7 @@ contract ReclaimVault {
 
     address public guardian;
     address public attester;
-    Recipients public recipients;
+    address public treasury;
     uint256 public maxWeiPerKg;
 
     uint256 public rewardsPool;
@@ -60,8 +53,8 @@ contract ReclaimVault {
     mapping(bytes32 batchId => Batch) public batches;
 
     // ---- timelocked changes
-    Recipients public pendingRecipients;
-    uint64 public recipientsReadyAt;
+    address public pendingTreasury;
+    uint64 public treasuryReadyAt;
     address public pendingAttester;
     uint64 public attesterReadyAt;
     uint256 public pendingMaxWeiPerKg;
@@ -72,12 +65,12 @@ contract ReclaimVault {
     bool private _locked;
 
     event Received(address indexed from, uint256 amount);
-    event Distributed(uint256 toRewards, uint256 toEnvironment, uint256 toBuyback);
+    event Distributed(uint256 toRewards, uint256 toTreasury);
     event BatchRecorded(bytes32 indexed batchId, uint8 material, uint128 grams, bytes32 evidenceHash);
     event BatchVoided(bytes32 indexed batchId, bytes32 reasonHash);
     event RewardPaid(bytes32 indexed batchId, address indexed to, uint256 amount);
-    event RecipientsProposed(Recipients next, uint64 readyAt);
-    event RecipientsChanged(Recipients next);
+    event TreasuryProposed(address next, uint64 readyAt);
+    event TreasuryChanged(address previous, address next);
     event AttesterProposed(address next, uint64 readyAt);
     event AttesterChanged(address previous, address next);
     event RateProposed(uint256 next, uint64 readyAt);
@@ -116,13 +109,12 @@ contract ReclaimVault {
         _;
     }
 
-    constructor(address guardian_, address attester_, address environment_, address buyback_, uint256 maxWeiPerKg_) {
-        if (guardian_ == address(0) || attester_ == address(0)) revert ZeroAddress();
-        _checkRecipients(Recipients(environment_, buyback_));
+    constructor(address guardian_, address attester_, address treasury_, uint256 maxWeiPerKg_) {
+        if (guardian_ == address(0) || attester_ == address(0) || treasury_ == address(0)) revert ZeroAddress();
         _checkRate(maxWeiPerKg_);
         guardian = guardian_;
         attester = attester_;
-        recipients = Recipients(environment_, buyback_);
+        treasury = treasury_;
         maxWeiPerKg = maxWeiPerKg_;
     }
 
@@ -189,21 +181,21 @@ contract ReclaimVault {
     }
 
     // ================================================================== guardian (all timelocked)
-    function proposeRecipients(Recipients calldata next) external onlyGuardian {
-        _checkRecipients(next);
-        pendingRecipients = next;
-        recipientsReadyAt = uint64(block.timestamp + TIMELOCK);
-        emit RecipientsProposed(next, recipientsReadyAt);
+    function proposeTreasury(address next) external onlyGuardian {
+        if (next == address(0)) revert ZeroAddress();
+        pendingTreasury = next;
+        treasuryReadyAt = uint64(block.timestamp + TIMELOCK);
+        emit TreasuryProposed(next, treasuryReadyAt);
     }
 
-    function executeRecipients() external onlyGuardian nonReentrant {
-        if (recipientsReadyAt == 0) revert NothingPending();
-        if (block.timestamp < recipientsReadyAt) revert TooEarly();
-        _distribute(); // fees earned under the old recipients go to them
-        recipients = pendingRecipients;
-        delete pendingRecipients;
-        recipientsReadyAt = 0;
-        emit RecipientsChanged(recipients);
+    function executeTreasury() external onlyGuardian nonReentrant {
+        if (treasuryReadyAt == 0) revert NothingPending();
+        if (block.timestamp < treasuryReadyAt) revert TooEarly();
+        _distribute(); // fees earned under the old treasury go to it
+        emit TreasuryChanged(treasury, pendingTreasury);
+        treasury = pendingTreasury;
+        pendingTreasury = address(0);
+        treasuryReadyAt = 0;
     }
 
     function proposeAttester(address next) external onlyGuardian {
@@ -254,11 +246,11 @@ contract ReclaimVault {
         guardianReadyAt = 0;
     }
 
-    /// @param kind 0 recipients, 1 attester, 2 reward cap, 3 guardian
+    /// @param kind 0 treasury, 1 attester, 2 reward cap, 3 guardian
     function cancelProposal(uint8 kind) external onlyGuardian {
         if (kind == 0) {
-            delete pendingRecipients;
-            recipientsReadyAt = 0;
+            pendingTreasury = address(0);
+            treasuryReadyAt = 0;
         } else if (kind == 1) {
             pendingAttester = address(0);
             attesterReadyAt = 0;
@@ -276,20 +268,13 @@ contract ReclaimVault {
     function _distribute() internal {
         uint256 amount = pending();
         if (amount == 0) return;
-        uint256 toEnvironment = amount * SHARE_ENVIRONMENT_BPS / BPS;
-        uint256 toBuyback = amount * SHARE_BUYBACK_BPS / BPS;
-        uint256 toRewards = amount - toEnvironment - toBuyback;
+        uint256 toTreasury = amount * SHARE_TREASURY_BPS / BPS;
+        uint256 toRewards = amount - toTreasury;
         // Book the rewards share before any ETH leaves, so pending() can never count it again.
         rewardsPool += toRewards;
         totalDistributed += amount;
-        Recipients memory r = recipients;
-        _send(r.environment, toEnvironment);
-        _send(r.buyback, toBuyback);
-        emit Distributed(toRewards, toEnvironment, toBuyback);
-    }
-
-    function _checkRecipients(Recipients memory r) private pure {
-        if (r.environment == address(0) || r.buyback == address(0)) revert ZeroAddress();
+        _send(treasury, toTreasury);
+        emit Distributed(toRewards, toTreasury);
     }
 
     function _checkRate(uint256 rate) private pure {
