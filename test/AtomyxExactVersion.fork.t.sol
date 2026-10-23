@@ -112,7 +112,7 @@ interface IReclaimVault {
     function distribute() external;
     function guardian() external view returns (address);
     function attester() external view returns (address);
-    function recipients() external view returns (address environment, address buyback);
+    function treasury() external view returns (address);
     function rewardsPool() external view returns (uint256);
     function maxWeiPerKg() external view returns (uint256);
     function batchCap(bytes32) external view returns (uint256);
@@ -163,7 +163,7 @@ contract AtomyxExactVersionForkTest is Test {
     address constant TREASURY = 0xD88539d3c4C460136a733A3Fd60cf6BF269079da;
     string evidenceDir = "evidence/exact/";
     bytes32 constant TOPOLOGY = keccak256("atomyx.exact-version-evidence.topology");
-    uint256 constant NORMAL_PPM = 23_000; // 0.30% platform + 2% creator, both sides
+    uint256 constant NORMAL_PPM = 28_000; // 0.30% platform + 2.5% creator, both sides
     uint256 constant OPENING_TOTAL_PPM = 990_000;
 
     string fixture;
@@ -950,13 +950,12 @@ contract AtomyxExactVersionForkTest is Test {
         fees.claimPlatform();
         vm.expectRevert(bytes4(keccak256("NothingToClaim()")));
         taxVault.claimCreator();
-        // ReclaimVault: 30% environment fund, 20% buyback, 50% Recycling Rewards pool kept in the vault.
-        (address env, address bb) = IReclaimVault(vault).recipients();
-        uint256 e0 = env.balance;
-        uint256 b0 = bb.balance;
+        // ReclaimVault: 80% project treasury, 20% Recycling Rewards pool kept in the vault.
+        address treasury = IReclaimVault(vault).treasury();
+        uint256 t0 = treasury.balance;
         IReclaimVault(vault).distribute();
-        uint256 paid = (env.balance - e0) + (env == bb ? 0 : bb.balance - b0);
-        assertEq(paid, c * 3000 / 10_000 + c * 2000 / 10_000, "environment + buyback shares");
+        uint256 paid = treasury.balance - t0;
+        assertEq(paid, c * 8000 / 10_000, "treasury share");
         assertEq(vault.balance, c - paid, "the rewards share stays in the vault");
         assertEq(IReclaimVault(vault).rewardsPool(), vault.balance, "booked as the Recycling Rewards pool");
         _rec("vaultPaidOut", paid);

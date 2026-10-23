@@ -12,7 +12,7 @@ contract Reenterer {
     }
 
     receive() external payable {
-        if (address(vault) != address(0) && vault.pending() > 0) vault.distribute();
+        if (address(vault) != address(0)) vault.distribute(); // re-entry must hit the guard
     }
 }
 
@@ -20,8 +20,7 @@ contract ReclaimVaultTest is Test {
     ReclaimVault vault;
     address guardian = makeAddr("atmx-guardian");
     address attester = makeAddr("atmx-attester");
-    address environment = makeAddr("atmx-environment");
-    address buyback = makeAddr("atmx-buyback");
+    address treasury = makeAddr("atmx-treasury");
     address collector = makeAddr("atmx-collector");
     uint256 constant RATE = 0.0002 ether; // per kg
 
@@ -30,7 +29,7 @@ contract ReclaimVaultTest is Test {
 
     function setUp() public {
         vm.warp(1_800_000_000);
-        vault = new ReclaimVault(guardian, attester, environment, buyback, RATE);
+        vault = new ReclaimVault(guardian, attester, treasury, RATE);
     }
 
     function _fund(uint256 amount) internal {
@@ -44,13 +43,12 @@ contract ReclaimVaultTest is Test {
         vault.recordBatch(id, 0, grams, EVIDENCE);
     }
 
-    function test_split50_30_20() public {
+    function test_split80_20() public {
         _fund(1 ether);
         vault.distribute();
-        assertEq(environment.balance, 0.3 ether, "environment fund");
-        assertEq(buyback.balance, 0.2 ether, "buyback");
-        assertEq(vault.rewardsPool(), 0.5 ether, "rewards kept");
-        assertEq(address(vault).balance, 0.5 ether);
+        assertEq(treasury.balance, 0.8 ether, "project treasury");
+        assertEq(vault.rewardsPool(), 0.2 ether, "rewards kept");
+        assertEq(address(vault).balance, 0.2 ether);
         assertEq(vault.pending(), 0);
         assertEq(vault.totalDistributed(), 1 ether);
     }
@@ -61,11 +59,11 @@ contract ReclaimVaultTest is Test {
         vault.distribute();
         vm.prank(collector);
         vault.distribute(); // nothing pending: no-op
-        assertEq(vault.rewardsPool(), 0.5 ether);
+        assertEq(vault.rewardsPool(), 0.2 ether);
         _fund(1 ether);
         vault.distribute();
-        assertEq(vault.rewardsPool(), 1 ether);
-        assertEq(environment.balance, 0.6 ether);
+        assertEq(vault.rewardsPool(), 0.4 ether);
+        assertEq(treasury.balance, 1.6 ether);
     }
 
     function test_recordBatchRules() public {
@@ -96,7 +94,7 @@ contract ReclaimVaultTest is Test {
 
     function test_rewardOnlyAfterReviewWithinWeightCap() public {
         _fund(10 ether);
-        vault.distribute(); // 5 ETH in the rewards pool
+        vault.distribute(); // 2 ETH in the rewards pool
         _record(BATCH, 500_000); // 500 kg -> cap 0.1 ETH at 0.0002 ETH/kg
         assertEq(vault.batchCap(BATCH), 0.1 ether);
         vm.startPrank(guardian);
@@ -109,7 +107,7 @@ contract ReclaimVaultTest is Test {
         vault.payReward(BATCH, collector, 0.04 ether);
         vm.stopPrank();
         assertEq(collector.balance, 0.1 ether);
-        assertEq(vault.rewardsPool(), 4.9 ether);
+        assertEq(vault.rewardsPool(), 1.9 ether);
         assertEq(vault.totalRewardsPaid(), 0.1 ether);
         (, uint128 paid,,,,) = vault.batches(BATCH);
         assertEq(paid, 0.1 ether);
@@ -117,12 +115,12 @@ contract ReclaimVaultTest is Test {
 
     function test_rewardNeverExceedsPool() public {
         _fund(0.01 ether);
-        vault.distribute(); // 0.005 ETH in the pool
+        vault.distribute(); // 0.002 ETH in the pool
         _record(BATCH, 1_000_000); // cap 0.2 ETH
         vm.warp(block.timestamp + 24 hours);
         vm.prank(guardian);
         vm.expectRevert(ReclaimVault.RewardTooLarge.selector);
-        vault.payReward(BATCH, collector, 0.006 ether);
+        vault.payReward(BATCH, collector, 0.003 ether);
     }
 
     function test_onlyGuardianPays_unknownAndVoidedBatchesRejected() public {
@@ -171,9 +169,9 @@ contract ReclaimVaultTest is Test {
 
     function test_rateCapTimelockAndHardMax() public {
         vm.expectRevert(ReclaimVault.BadRate.selector);
-        new ReclaimVault(guardian, attester, environment, buyback, 0);
+        new ReclaimVault(guardian, attester, treasury, 0);
         vm.expectRevert(ReclaimVault.BadRate.selector);
-        new ReclaimVault(guardian, attester, environment, buyback, 0.001 ether + 1);
+        new ReclaimVault(guardian, attester, treasury, 0.001 ether + 1);
         vm.startPrank(guardian);
         vm.expectRevert(ReclaimVault.BadRate.selector);
         vault.proposeRate(0.002 ether);
@@ -186,20 +184,25 @@ contract ReclaimVaultTest is Test {
         assertEq(vault.maxWeiPerKg(), 0.001 ether);
     }
 
-    function test_recipientsTimelock_oldFeesToOldRecipients() public {
-        address newEnv = makeAddr("atmx-new-environment");
+    function test_treasuryTimelock_oldFeesToOldTreasury() public {
+        address next = makeAddr("atmx-new-treasury");
         vm.prank(guardian);
-        vault.proposeRecipients(ReclaimVault.Recipients(newEnv, buyback));
+        vm.expectRevert(ReclaimVault.ZeroAddress.selector);
+        vault.proposeTreasury(address(0));
+        vm.prank(guardian);
+        vault.proposeTreasury(next);
         _fund(1 ether); // earned before the change
         vm.prank(guardian);
         vm.expectRevert(ReclaimVault.TooEarly.selector);
-        vault.executeRecipients();
+        vault.executeTreasury();
         vm.warp(block.timestamp + 48 hours);
         vm.prank(guardian);
-        vault.executeRecipients();
-        assertEq(environment.balance, 0.3 ether, "old recipient got the old fees");
-        (address env,) = vault.recipients();
-        assertEq(env, newEnv);
+        vault.executeTreasury();
+        assertEq(treasury.balance, 0.8 ether, "old treasury got the old fees");
+        assertEq(vault.treasury(), next);
+        _fund(1 ether);
+        vault.distribute();
+        assertEq(next.balance, 0.8 ether, "new fees go to the new treasury");
     }
 
     function test_attesterAndGuardianTimelocked() public {
@@ -227,7 +230,7 @@ contract ReclaimVaultTest is Test {
 
     function test_reentrantRecipientCannotDoubleDistribute() public {
         Reenterer r = new Reenterer();
-        ReclaimVault v = new ReclaimVault(guardian, attester, address(r), buyback, RATE);
+        ReclaimVault v = new ReclaimVault(guardian, attester, address(r), RATE);
         r.set(v);
         vm.deal(address(this), 1 ether);
         (bool ok,) = address(v).call{value: 1 ether}("");
@@ -238,18 +241,18 @@ contract ReclaimVaultTest is Test {
 
     function test_zeroAddressesRejected() public {
         vm.expectRevert(ReclaimVault.ZeroAddress.selector);
-        new ReclaimVault(address(0), attester, environment, buyback, RATE);
+        new ReclaimVault(address(0), attester, treasury, RATE);
         vm.expectRevert(ReclaimVault.ZeroAddress.selector);
-        new ReclaimVault(guardian, address(0), environment, buyback, RATE);
+        new ReclaimVault(guardian, address(0), treasury, RATE);
         vm.expectRevert(ReclaimVault.ZeroAddress.selector);
-        new ReclaimVault(guardian, attester, address(0), buyback, RATE);
+        new ReclaimVault(guardian, attester, address(0), RATE);
     }
 
     function testFuzz_splitAlwaysAddsUp(uint96 amount) public {
         vm.assume(amount > 0);
         _fund(amount);
         vault.distribute();
-        assertEq(environment.balance + buyback.balance + vault.rewardsPool(), amount);
+        assertEq(treasury.balance + vault.rewardsPool(), amount);
         assertEq(address(vault).balance, vault.rewardsPool());
     }
 

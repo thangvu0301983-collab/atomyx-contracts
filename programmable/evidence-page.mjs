@@ -117,13 +117,13 @@ The permit is valid from \`validAfter\` = ${utc(va)} to \`deadline\` = ${utc(dl)
 The Reclaim Vault is the fourth graph target and the hook's immutable creator-fee recipient. On the exact deployed
 vault:
 
-- \`distribute()\` (anyone) pays 30% to the environment wallet and 20% to the buyback wallet, and keeps 50% as the
-  Recycling Rewards pool (A01: ${eth(a01.vaultPaidOut)} ETH paid out, ${eth(a01.vaultRewardsPool)} ETH kept).
+- \`distribute()\` (anyone) pays 80% to the project treasury wallet and keeps 20% as the Recycling Rewards pool
+  (A01: ${eth(a01.vaultPaidOut)} ETH paid out, ${eth(a01.vaultRewardsPool)} ETH kept).
 - Only the attester can record a batch (material, weight in grams, evidence hash).
 - A batch can be paid only by the guardian, only after the 24-hour review period, never after it was voided, and in
   total at most its weight times the cap: ${eth(v01.maxWeiPerKg)} ETH per kg at launch (a 500 kg batch is capped at
   ${eth(v01.batchCapFor500kg)} ETH), with a hard maximum of 0.001 ETH per kg in the contract.
-- Changing the recipients, the attester, the cap or the guardian takes a 48-hour public timelock, with no immediate
+- Changing the treasury wallet, the attester, the cap or the guardian takes a 48-hour public timelock, with no immediate
   exception. There is no other way to move ETH out of the vault.
 
 The ledger records the attester's claims; it does not by itself prove physical recycling. The project description in

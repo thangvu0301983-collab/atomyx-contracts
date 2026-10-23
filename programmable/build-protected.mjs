@@ -7,7 +7,7 @@
 //
 // Usage (from this repository):
 //   PL_DIR=<installed @programmable/launch 4.1.7 dir> SOLCJS_DIR=<dir with solc 0.8.26> ETH_RPC_URL=<mainnet rpc> \
-//   LAUNCH_WALLET=0x.. GUARDIAN=0x.. ATTESTER=0x.. ENVIRONMENT=0x.. BUYBACK=0x.. [MAX_WEI_PER_KG=wei] \
+//   LAUNCH_WALLET=0x.. GUARDIAN=0x.. ATTESTER=0x.. TREASURY=0x.. [MAX_WEI_PER_KG=wei] \
 //   WEBSITE_URL=https://.. IMAGE_URI=https://.. SOURCE_URL=https://github.com/.. SOURCE_REVISION=<commit> \
 //   node programmable/build-protected.mjs
 // Then from protected/: programmable-launch validate launch.json --config protected-launch.config.json [--remote]
@@ -49,11 +49,11 @@ const sha = (b) => "sha256:" + createHash("sha256").update(b).digest("hex");
 // ------------------------------------------------------------------ public inputs
 const addr = (k) => { const v = need(k); if (!/^0x[0-9a-fA-F]{40}$/.test(v)) fail(k + " must be an address"); return getAddress(v); };
 const launchWallet = addr("LAUNCH_WALLET");
-const roles = { guardian: addr("GUARDIAN"), attester: addr("ATTESTER"), environment: addr("ENVIRONMENT"), buyback: addr("BUYBACK") };
+const roles = { guardian: addr("GUARDIAN"), attester: addr("ATTESTER"), treasury: addr("TREASURY") };
 // Recycling reward cap per kilogram of recorded waste (default 0.0002 ETH/kg; ReclaimVault allows at most 0.001 ETH/kg).
 const maxWeiPerKg = String(env.MAX_WEI_PER_KG ?? "200000000000000");
 if (!/^[1-9][0-9]*$/.test(maxWeiPerKg) || BigInt(maxWeiPerKg) > 10n ** 15n) fail("MAX_WEI_PER_KG must be 1..1e15 wei");
-const creatorBps = Number(env.CREATOR_BPS ?? 200);
+const creatorBps = Number(env.CREATOR_BPS ?? 250);
 const initialBuyWei = String(env.INITIAL_BUY_WEI ?? "30000000000000000");
 const targetFdvUsd = String(env.TARGET_FDV_USD ?? "17000");
 const minOutBps = BigInt(env.MIN_OUT_BPS ?? 9900);
@@ -80,7 +80,7 @@ if (isBase && (await client.getChainId()) !== 8453) fail("ETH_RPC_URL must be a 
 const tradeFeePolicy = isBase ? capabilities.profile?.programmableTradeFeePolicy : capabilities.programmableTradeFeePolicy?.policy;
 // Wallet disclosure, read from the chain so the description can never misstate who controls what.
 const walletKind = async (a) => ((await client.getCode({ address: a })) ?? "0x") === "0x" ? "an ordinary wallet, not a multisig" : "a smart-contract wallet";
-const roleNames = { launch: "the launch wallet", guardian: "the guardian", attester: "the attester", environment: "the environment fund wallet", buyback: "the buyback wallet" };
+const roleNames = { launch: "the launch wallet", guardian: "the guardian", attester: "the attester", treasury: "the project treasury wallet" };
 const roleAddrs = { launch: launchWallet, ...roles };
 const byAddress = new Map();
 for (const [k, a] of Object.entries(roleAddrs)) byAddress.set(a, [...(byAddress.get(a) ?? []), roleNames[k]]);
@@ -244,7 +244,7 @@ function graphRoot(role, abiOwner, args, flags) {
   fail("address search exhausted for " + role);
 }
 const vaultArtifact = { abi: v.abi, bytecode: "0x" + v.evm.bytecode.object };
-const vault = graphRoot("vault", vaultArtifact, [roles.guardian, roles.attester, roles.environment, roles.buyback, BigInt(maxWeiPerKg)]);
+const vault = graphRoot("vault", vaultArtifact, [roles.guardian, roles.attester, roles.treasury, BigInt(maxWeiPerKg)]);
 const init = graphRoot("initializer", artifacts.initializer, [pins.manager, profile.graphFactory, pins.feed, pins.feedCodeHash]);
 const token = graphRoot("token", artifacts.token, ["ATOMYX", "ATMX", supply, init.address, pins.manager]);
 const config = [token.address, 0, 60, price.sqrtPriceX96, init.address, vault.address, creatorBps, creatorBps, ZERO, 0];
@@ -297,7 +297,7 @@ const targets = [
       creatorBps, creatorBps, ZERO, 0], owner, pins.router, pins.routerCodeHash, exemptions],
     declaredHookPermissions: ["beforeInitialize", "beforeSwap", "afterSwap", "beforeSwapReturnDelta", "afterSwapReturnDelta"] },
   { ...base("vault", vault, "atomyx-vault", "atomyx/artifacts/vault.json", "other"),
-    constructorArguments: [roles.guardian, roles.attester, roles.environment, roles.buyback, maxWeiPerKg] },
+    constructorArguments: [roles.guardian, roles.attester, roles.treasury, maxWeiPerKg] },
 ];
 // No profileVersion: the CLI then binds the live /v3/capabilities profile (3.6.0) and its exact fee policy.
 const cfg = { schemaVersion: "programmable.launch-pack-config.v3", ...(isBase ? { profileVersion: "3.6.0" } : {}), chainId: String(chain), launchWallet, nonce,
