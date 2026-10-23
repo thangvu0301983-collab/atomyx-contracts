@@ -2,9 +2,9 @@
   "schemaVersion": "atomyx.exact-version-execution-evidence.v1",
   "subject": {
     "chainId": "1",
-    "forkBlock": "26250987",
-    "launchWallet": "0x8B4b6d4AB1Ad29E22cA5Fb850E8959a7439D944F",
-    "developer": "0x8B4b6d4AB1Ad29E22cA5Fb850E8959a7439D944F",
+    "forkBlock": "26252107",
+    "launchWallet": "0xD14148ebFD28D664f1B89A4d6CCcfca002446B7b",
+    "developer": "0xD14148ebFD28D664f1B89A4d6CCcfca002446B7b",
     "router": "0xBE4bF6Ac8c6F012E1C8f25747A9fBccB2FDAC4C3",
     "graphFactory": "0xB012e4A8F2c5FC4E8E4faCA9D5Ad6FfF13FBA887",
     "creationCodeHashes": {
@@ -15,13 +15,13 @@
     },
     "initializerCall": {
       "function": "initialize(hook,token,startTick,developer,minimumTokensOut)",
-      "startTick": 187620,
-      "minimumTokensOut": "6750778587682987700295615",
+      "startTick": 187560,
+      "minimumTokensOut": "6710670923927445743591303",
       "valueWei": "50000000000000000"
     },
     "permitWindow": {
-      "validAfter": "1792795375",
-      "deadline": "1792881775",
+      "validAfter": "1792808816",
+      "deadline": "1792895216",
       "lifetimeSeconds": "86400",
       "routerMaximumLifetimeSeconds": "86400"
     }
@@ -88,26 +88,26 @@
   "scenarios": {
     "A01-custom-accounting": {
       "claimsIsolatedAndCallerIndependent": true,
-      "creatorAccrued": "57633742662374838",
+      "creatorAccrued": "57624261734580614",
       "exactOutputBuyWith10EthSent": {
-        "creatorFee": "720884822130845",
-        "grossNative": "36044241106542223",
-        "nativeIn": "36044241106542223",
+        "creatorFee": "723312120536288",
+        "grossNative": "36165606026814416",
+        "nativeIn": "36165606026814416",
         "nativeOut": "0",
         "openingTax": "0",
-        "platformFee": "108132723319627",
+        "platformFee": "108496818080444",
         "tokensIn": "0",
         "tokensOut": "3000000000000000000000000"
       },
       "inventoryConserved": true,
       "openingTaxAccrued": "16116660000000000",
       "passed": true,
-      "platformAccrued": "8645061399356227",
+      "platformAccrued": "8643639260187094",
       "refundExact": true,
       "scenario": "A01-custom-accounting",
       "solvent": true,
-      "vaultPaidOut": "28816871331187418",
-      "vaultRewardsPool": "28816871331187420"
+      "vaultPaidOut": "28812130867290306",
+      "vaultRewardsPool": "28812130867290308"
     },
     "C01-callback-authentication": {
       "afterSwapBoundToActiveSwap": true,
@@ -120,7 +120,7 @@
     },
     "F01-platform-fee-exact": {
       "ceilPerTradeNoOvercharge": true,
-      "grossNativeTotal": "21832150367423696220",
+      "grossNativeTotal": "21813897731714423313",
       "passed": true,
       "platformFeeOnGross_1000000000": "3000000",
       "platformFeeOnGross_12300000000000000": "36900000000000",
@@ -128,30 +128,30 @@
       "platformFeeOnGross_4200000000000000000": "12600000000000000",
       "platformFeeOnGross_700000000000000000": "2100000000000000",
       "platformFeePpmOfGross": "3000",
-      "platformFeeTotal": "65496451102271089",
+      "platformFeeTotal": "65441693195143270",
       "sameFeeOnEveryRoute": true,
       "scenario": "F01-platform-fee-exact"
     },
     "L01-liquidity-custody-and-withdrawal": {
-      "initializerTokenDust": "2130",
-      "lockedLiquidity": "84350402156845222604686",
+      "initializerTokenDust": "5230",
+      "lockedLiquidity": "84603820630259055837607",
       "passed": true,
       "scenario": "L01-liquidity-custody-and-withdrawal",
       "seedLiquidityPermanentlyLocked": true,
-      "seededTokens": "999999999999999999999997870",
-      "thirdPartyEthDeposited": "309393672731991",
+      "seededTokens": "999999999999999999999994770",
+      "thirdPartyEthDeposited": "296077249575115",
       "thirdPartyEthRoundingLoss": "1",
       "thirdPartyLiquidityFullyWithdrawable": true,
       "thirdPartyTokenRoundingLoss": "1",
-      "thirdPartyTokensDeposited": "28199961536445516012386"
+      "thirdPartyTokensDeposited": "29329013345116848519026"
     },
     "P01-opening-fdv-floor": {
       "atFloorSucceeds": true,
       "belowFloorReverts": true,
-      "minimumEthUsdAnswerForLaunch": "210822492720",
-      "observedEthUsdAnswer": "239170345062",
+      "minimumEthUsdAnswerForLaunch": "209561407854",
+      "observedEthUsdAnswer": "238135131229",
       "passed": true,
-      "priceDropToleranceBps": "1185",
+      "priceDropToleranceBps": "1199",
       "scenario": "P01-opening-fdv-floor"
     },
     "P02-stale-oracle-rejected": {
@@ -189,7 +189,7 @@
         "openingTax": "9670000000000000",
         "platformFee": "30000000000000",
         "tokensIn": "0",
-        "tokensOut": "13863613933614713074759"
+        "tokensOut": "13781810850862655390024"
       },
       "passed": true,
       "scenario": "P06-opening-tax-at-launch-second",
@@ -204,7 +204,7 @@
         "openingTax": "9347660000000000",
         "platformFee": "30000000000000",
         "tokensIn": "0",
-        "tokensOut": "58548952689326723406093"
+        "tokensOut": "58203496652250449080485"
       },
       "buyAtSecond10": {
         "creatorFee": "200000000000000",
@@ -214,7 +214,7 @@
         "openingTax": "6446660000000000",
         "platformFee": "30000000000000",
         "tokensIn": "0",
-        "tokensOut": "460473534722930167992689"
+        "tokensOut": "457758026706053274471422"
       },
       "buyAtSecond20": {
         "creatorFee": "200000000000000",
@@ -224,7 +224,7 @@
         "openingTax": "3223330000000000",
         "platformFee": "30000000000000",
         "tokensIn": "0",
-        "tokensOut": "905841984420109514878401"
+        "tokensOut": "900507406304997622003360"
       },
       "buyAtSecond29": {
         "creatorFee": "200000000000000",
@@ -234,7 +234,7 @@
         "openingTax": "322330000000000",
         "platformFee": "30000000000000",
         "tokensIn": "0",
-        "tokensOut": "1304333565424319310328633"
+        "tokensOut": "1296669381158004337781482"
       },
       "buyAtSecond30": {
         "creatorFee": "200000000000000",
@@ -244,13 +244,13 @@
         "openingTax": "0",
         "platformFee": "30000000000000",
         "tokensIn": "0",
-        "tokensOut": "1345230515056471164978434"
+        "tokensOut": "1337347219473104623360946"
       },
       "passed": true,
       "scenario": "P07-opening-tax-decay"
     },
     "P08-developer-tax-exempt-but-capped": {
-      "developerBoughtDuringProtection": "8171617524340983842929230",
+      "developerBoughtDuringProtection": "8123134113869811148022375",
       "developerBuyAtSecond1": {
         "creatorFee": "200000000000000",
         "grossNative": "10000000000000000",
@@ -259,23 +259,23 @@
         "openingTax": "0",
         "platformFee": "30000000000000",
         "tokensIn": "0",
-        "tokensOut": "1352649253954127580004366"
+        "tokensOut": "1344678635155219487829139"
       },
       "developerOverCapBuyReverts": true,
       "passed": true,
       "scenario": "P08-developer-tax-exempt-but-capped"
     },
     "P09-buyer-cap-cumulative": {
-      "budgetRemainingAfterSell": "6637299773474115429265788",
-      "firstBuyTokens": "13362700226525884570734212",
+      "budgetRemainingAfterSell": "6715086351336712245115449",
+      "firstBuyTokens": "13284913648663287754884551",
       "overBudgetBuyReverts": true,
       "passed": true,
       "scenario": "P09-buyer-cap-cumulative",
       "sellsDoNotRefill": true
     },
     "P10-recipient-cap-on-transfers": {
-      "aliceBought": "13362700226525884570734212",
-      "bobBought": "13007898439628907694251334",
+      "aliceBought": "13284913648663287754884551",
+      "bobBought": "12934217576681124797079019",
       "forwardingDoesNotRefill": true,
       "overCapTransferReverts": true,
       "passed": true,
@@ -287,13 +287,13 @@
       "passed": true,
       "scenario": "P11-canonical-router-only-buys",
       "sellThroughNonCanonicalRouterInWindow": {
-        "creatorFee": "327143782974736",
-        "grossNative": "16357189148736815",
+        "creatorFee": "327135026929046",
+        "grossNative": "16356751346452291",
         "nativeIn": "0",
-        "nativeOut": "15980973798315868",
+        "nativeOut": "15980546065483888",
         "openingTax": "0",
-        "platformFee": "49071567446211",
-        "tokensIn": "2242200486729913934473583",
+        "platformFee": "49070254039357",
+        "tokensIn": "2229059757685691801030035",
         "tokensOut": "0"
       },
       "sellsAllowedWithNormalFees": true
@@ -308,7 +308,7 @@
         "openingTax": "0",
         "platformFee": "9000000000000000",
         "tokensIn": "0",
-        "tokensOut": "288366482757054162789957279"
+        "tokensOut": "287160287683295136237485502"
       },
       "passed": true,
       "scenario": "P12-protection-expires-at-300s"
@@ -322,7 +322,7 @@
         "openingTax": "0",
         "platformFee": "3000000000000",
         "tokensIn": "0",
-        "tokensOut": "135430928858152015812623"
+        "tokensOut": "134631908472801570658839"
       },
       "buyExactIn_1": {
         "creatorFee": "5000000000000000",
@@ -332,7 +332,7 @@
         "openingTax": "0",
         "platformFee": "750000000000000",
         "tokensIn": "0",
-        "tokensOut": "32737101275142618153196082"
+        "tokensOut": "32550358515028587815218059"
       },
       "buyExactIn_2": {
         "creatorFee": "60000000000000000",
@@ -342,67 +342,67 @@
         "openingTax": "0",
         "platformFee": "9000000000000000",
         "tokensIn": "0",
-        "tokensOut": "272209466192400472004507978"
+        "tokensOut": "271151327999262016869115381"
       },
       "buyExactOut_0": {
-        "creatorFee": "307615689775",
-        "grossNative": "15380784488781",
-        "nativeIn": "15380784488781",
+        "creatorFee": "308313165009",
+        "grossNative": "15415658250459",
+        "nativeIn": "15415658250459",
         "nativeOut": "0",
         "openingTax": "0",
-        "platformFee": "46142353467",
+        "platformFee": "46246974752",
         "tokensIn": "0",
         "tokensOut": "1000000000000000000000"
       },
       "buyExactOut_1": {
-        "creatorFee": "1549338809686490",
-        "grossNative": "77466940484324492",
-        "nativeIn": "77466940484324492",
+        "creatorFee": "1552830507072443",
+        "grossNative": "77641525353622172",
+        "nativeIn": "77641525353622172",
         "nativeOut": "0",
         "openingTax": "0",
-        "platformFee": "232400821452974",
+        "platformFee": "232924576060867",
         "tokensIn": "0",
         "tokensOut": "5000000000000000000000000"
       },
       "buyExactOut_2": {
-        "creatorFee": "13262015215769885",
-        "grossNative": "663100760788494251",
-        "nativeIn": "663100760788494251",
+        "creatorFee": "13290168368791078",
+        "grossNative": "664508418439553897",
+        "nativeIn": "664508418439553897",
         "nativeOut": "0",
         "openingTax": "0",
-        "platformFee": "1989302282365483",
+        "platformFee": "1993525255318662",
         "tokensIn": "0",
         "tokensOut": "40000000000000000000000000"
       },
       "passed": true,
       "scenario": "S01-four-quadrants-multi-size",
       "sellExactIn_0": {
-        "creatorFee": "344071952895",
-        "grossNative": "17203597644748",
+        "creatorFee": "344762063794",
+        "grossNative": "17238103189725",
         "nativeIn": "0",
-        "nativeOut": "16807914898918",
+        "nativeOut": "16841626816361",
         "openingTax": "0",
-        "platformFee": "51610792935",
+        "platformFee": "51714309570",
         "tokensIn": "1000000000000000000000",
         "tokensOut": "0"
       },
       "sellExactIn_1": {
-        "creatorFee": "343537227632209",
-        "grossNative": "17176861381610441",
+        "creatorFee": "344227333819452",
+        "grossNative": "17211366690972568",
         "nativeIn": "0",
-        "nativeOut": "16781793569833400",
+        "nativeOut": "16815505257080198",
         "openingTax": "0",
-        "platformFee": "51530584144832",
+        "platformFee": "51634100072918",
         "tokensIn": "1000000000000000000000000",
         "tokensOut": "0"
       },
       "sellExactIn_2": {
-        "creatorFee": "3377599533795664",
-        "grossNative": "168879976689783175",
+        "creatorFee": "3384498147036257",
+        "grossNative": "169224907351812834",
         "nativeIn": "0",
-        "nativeOut": "164995737225918161",
+        "nativeOut": "165332734482721138",
         "openingTax": "0",
-        "platformFee": "506639930069350",
+        "platformFee": "507674722055439",
         "tokensIn": "10000000000000000000000000",
         "tokensOut": "0"
       },
@@ -413,7 +413,7 @@
         "nativeOut": "100000000000000",
         "openingTax": "0",
         "platformFee": "307062436029",
-        "tokensIn": "6154917307216997615974",
+        "tokensIn": "6142184377881280472837",
         "tokensOut": "0"
       },
       "sellExactOut_1": {
@@ -423,7 +423,7 @@
         "nativeOut": "10000000000000000",
         "openingTax": "0",
         "platformFee": "30706243602866",
-        "tokensIn": "616077236471931806405625",
+        "tokensIn": "614800377012301986773861",
         "tokensOut": "0"
       },
       "sellExactOut_2": {
@@ -433,7 +433,7 @@
         "nativeOut": "500000000000000000",
         "openingTax": "0",
         "platformFee": "1535312180143296",
-        "tokensIn": "32356650852396530408445541",
+        "tokensIn": "32283035983277805936016074",
         "tokensOut": "0"
       }
     },
@@ -446,16 +446,16 @@
         "openingTax": "0",
         "platformFee": "3000000000000000",
         "tokensIn": "0",
-        "tokensOut": "119193821152926800102311862"
+        "tokensOut": "118575046877800226318366337"
       },
       "aliceSellAfter30Days": {
-        "creatorFee": "11633913197491904",
-        "grossNative": "581695659874595193",
+        "creatorFee": "11623618476537351",
+        "grossNative": "581180923826867560",
         "nativeIn": "0",
-        "nativeOut": "568316659697479503",
+        "nativeOut": "567813762578849606",
         "openingTax": "0",
-        "platformFee": "1745086979623786",
-        "tokensIn": "59596910576463400051155931",
+        "platformFee": "1743542771480603",
+        "tokensIn": "59287523438900113159183168",
         "tokensOut": "0"
       },
       "bobBuyAfterAlice": {
@@ -466,26 +466,26 @@
         "openingTax": "0",
         "platformFee": "1500000000000000",
         "tokensIn": "0",
-        "tokensOut": "49475711392296732143175929"
+        "tokensOut": "49268577638279904142114043"
       },
       "bobExactOutBuyAfterOneYear": {
-        "creatorFee": "186547831402068",
-        "grossNative": "9327391570103416",
-        "nativeIn": "9327391570103416",
+        "creatorFee": "187434032342268",
+        "grossNative": "9371701617113415",
+        "nativeIn": "9371701617113415",
         "nativeOut": "0",
         "openingTax": "0",
-        "platformFee": "27982174710311",
+        "platformFee": "28115104851341",
         "tokensIn": "0",
         "tokensOut": "1000000000000000000000000"
       },
       "bobSellsEverything": {
-        "creatorFee": "8712028395099510",
-        "grossNative": "435601419754975510",
+        "creatorFee": "8719718732650974",
+        "grossNative": "435985936632548666",
         "nativeIn": "0",
-        "nativeOut": "425582587100611073",
+        "nativeOut": "425958260090000046",
         "openingTax": "0",
-        "platformFee": "1306804259264927",
-        "tokensIn": "50475711392296732143175929",
+        "platformFee": "1307957809897646",
+        "tokensIn": "50268577638279904142114043",
         "tokensOut": "0"
       },
       "noOracleOrTimeDependenceAfterLaunch": true,
@@ -508,19 +508,19 @@
       "allTargetsAtPredictedAddressesWithPackedRuntime": true,
       "creatorFee": "1000000000000000",
       "deployedThroughRealGraphFactoryAsRouter": true,
-      "feedAgeSecondsAtLaunch": "2460",
-      "feedAnswer": "239170345062",
+      "feedAgeSecondsAtLaunch": "1440",
+      "feedAnswer": "238135131229",
       "grossNative": "50000000000000000",
       "initialBuyInputWei": "50000000000000000",
-      "initialBuyTokensOut": "6818968270386856262924864",
+      "initialBuyTokensOut": "6778455478714591660193236",
       "maxFeedAgeSeconds": "3600",
-      "minimumTokensOut": "6750778587682987700295615",
-      "openingFdvUsd": "17016",
+      "minimumTokensOut": "6710670923927445743591303",
+      "openingFdvUsd": "17045",
       "openingTax": "0",
       "passed": true,
       "platformFee": "150000000000000",
       "scenario": "initial-buy-bound-call",
-      "startTick": "187620",
+      "startTick": "187560",
       "walletTokenLimit": "20000000000000000000000000"
     }
   },
