@@ -34,7 +34,8 @@ of the launch wallet.
   timelock with no immediate exception; a treasury change distributes pending fees to the old treasury first.
   There is no other way to move ETH out of the vault. Reentrancy-guarded; no immutables.
 
-The ledger records the attester's claims; it does not by itself prove physical recycling. The drop-off points,
+The ledger records the attester's claims; it does not by itself prove physical recycling. How each batch is
+evidenced, published and paid: [ledger/README.md](ledger/README.md). The drop-off points,
 sorting stations and recycling partners are planned and not yet operating; nothing in the launch graph depends on them.
 
 ## Build and test

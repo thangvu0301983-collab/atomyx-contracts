@@ -1,0 +1,23 @@
+{
+  "id": "ATMX-2026-0001",
+  "material": "PET",
+  "collector": {
+    "alias": "Collector nickname (no full legal name needed)",
+    "wallet": "0x0000000000000000000000000000000000000000"
+  },
+  "point": {
+    "name": "ATOMYX Pilot Point #1",
+    "city": "City, Country"
+  },
+  "weighings": [
+    { "checkpoint": "point", "grams": 0, "at": "2026-10-26T09:30:00Z", "photos": ["https://link-to-photo-of-the-scale"] },
+    { "checkpoint": "sorting", "grams": 0, "at": "2026-10-26T14:00:00Z", "photos": ["https://link-to-photo-of-the-scale"] },
+    { "checkpoint": "recycler", "grams": 0, "at": "2026-10-27T10:00:00Z", "photos": ["https://link-to-photo-of-the-scale"] }
+  ],
+  "recyclerReceipt": {
+    "recycler": "Recycler company name",
+    "reference": "Receipt or weighbridge ticket number",
+    "url": "https://link-to-scan-of-the-receipt"
+  },
+  "notes": ""
+}

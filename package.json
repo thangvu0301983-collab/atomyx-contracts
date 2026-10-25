@@ -1,8 +1,10 @@
 {
-  "name": "ciphra-contracts",
+  "name": "atomyx-contracts",
   "private": true,
-  "description": "CIPHRA ($CPH): Cipher Vault, Cipher Stake and Blind Ballot, launched on Programmable launch protection v1.",
+  "description": "ATOMYX ($ATMX): Reclaim Vault with the Recycling Ledger, launched on Programmable launch protection v1.",
   "license": "MIT",
   "type": "module",
-  "devDependencies": { "solc": "0.8.26" }
+  "devDependencies": {
+    "solc": "0.8.26"
+  }
 }
